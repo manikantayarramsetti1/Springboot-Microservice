@@ -14,6 +14,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     @Override
     public long placeOrder(OrderRequest orderRequest) {
+        log.info("Placing the order request: {}", orderRequest);
         return 0;
     }
 }

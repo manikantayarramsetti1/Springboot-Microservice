@@ -1,6 +1,7 @@
 package com.springboot.OrderService.service;
 
 import com.springboot.OrderService.entity.Order;
+import com.springboot.OrderService.external.client.ProductService;
 import com.springboot.OrderService.model.OrderRequest;
 import com.springboot.OrderService.repository.OrderRepository;
 import lombok.extern.log4j.Log4j2;
@@ -15,9 +16,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private ProductService productService;
+
     @Override
     public long placeOrder(OrderRequest orderRequest) {
         log.info("Placing order request: {}", orderRequest);
+
+        productService.reduceQuantity(orderRequest.getProductId(), orderRequest.getQuantity());
+
+        log.info("Creating order with Status CREATED");
         Order order = Order.builder()
                 .amount(orderRequest.getTotalAmount())
                 .orderStatus("CREATED")

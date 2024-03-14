@@ -40,25 +40,27 @@ public class OrderServiceImpl implements OrderService {
                 .quantity(orderRequest.getQuantity())
                 .build();
         order = orderRepository.save(order);
-        log.info("Calling Payment service to complete the payment");
-        PaymentRequest paymentRequest = PaymentRequest.builder()
+        log.info("Calling Payment Service to complete the payment");
+        PaymentRequest paymentRequest
+                = PaymentRequest.builder()
                 .orderId(order.getId())
                 .paymentMode(orderRequest.getPaymentMode())
                 .amount(orderRequest.getTotalAmount())
                 .build();
+
         String orderStatus = null;
         try {
             paymentService.doPayment(paymentRequest);
-            log.info("Payment done successfully. Changing the order status");
+            log.info("Payment done Successfully. Changing the Oder status to PLACED");
             orderStatus = "PLACED";
-
         } catch (Exception e) {
-            log.info("Error occurred in the Payment. changing order status to failed ");
+            log.error("Error occurred in payment. Changing order status to PAYMENT_FAILED");
             orderStatus = "PAYMENT_FAILED";
         }
 
         order.setOrderStatus(orderStatus);
         orderRepository.save(order);
+
         log.info("Order places successfully with Order Id: {}", order.getId());
         return order.getId();
     }
